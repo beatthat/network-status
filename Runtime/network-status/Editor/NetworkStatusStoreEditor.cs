@@ -26,6 +26,9 @@ namespace BeatThat.NetworkStatus
             GUI.color = state.hasNetworkError? ERROR: defaultColor;
             EditorGUILayout.LabelField("Has Network Error", state.hasNetworkError ? "TRUE" : "FALSE");
 
+            GUI.color = state.networkReachability == NetworkReachability.NotReachable ? ERROR : defaultColor;
+            EditorGUILayout.LabelField("Network Reachability", state.networkReachability.ToString());
+
             GUI.color = state.HasLastNetworkSuccess() ? PENDING : defaultColor;
             EditorGUILayout.LabelField("Last Network Success",
                                        state.HasLastNetworkSuccess() ?

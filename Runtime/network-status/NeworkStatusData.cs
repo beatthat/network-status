@@ -1,10 +1,12 @@
 using System;
+using UnityEngine;
 
 namespace BeatThat.NetworkStatus
 {
     public struct NetworkStatusData 
     {
         public bool hasNetworkError;
+        public NetworkReachability networkReachability;
         public DateTime lastNetworkSuccess;
         public DateTime lastNetworkError;
 

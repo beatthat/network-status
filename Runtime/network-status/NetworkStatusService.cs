@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using BeatThat.Bindings;
 using BeatThat.DependencyInjection;
@@ -23,6 +24,11 @@ namespace BeatThat.NetworkStatus
             var state = this.networkStatus.stateData;
 
             if(!state.hasNetworkError) {
+                StopAllCoroutines();
+                return;
+            }
+
+            if(state.networkReachability == NetworkReachability.NotReachable) {
                 StopAllCoroutines();
                 return;
             }
