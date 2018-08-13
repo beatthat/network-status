@@ -10,6 +10,11 @@ namespace BeatThat.NetworkStatus
         public DateTime lastNetworkSuccess;
         public DateTime lastNetworkError;
 
+        public bool IsNetworkReachable()
+        {
+            return this.networkReachability != NetworkReachability.NotReachable;
+        }
+
         public bool HasLastNetworkSuccess()
         {
             return this.lastNetworkSuccess.Ticks > default(DateTime).Ticks;
