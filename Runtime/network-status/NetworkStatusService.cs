@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using BeatThat.Bindings;
 using BeatThat.DependencyInjection;
 using BeatThat.Service;
@@ -11,6 +9,8 @@ namespace BeatThat.NetworkStatus
     [RegisterService]
     public class NetworkStatusService : BindingService
     {
+        private const float POLLING_INTERVAL_SECS = 5f;
+
         [Inject] HasState<NetworkStatusData> networkStatus;
 
         protected override void BindAll()
@@ -29,26 +29,45 @@ namespace BeatThat.NetworkStatus
             }
 
             if(state.networkReachability == NetworkReachability.NotReachable) {
-                StopAllCoroutines();
                 return;
             }
 
-            StopAllCoroutines();
-            StartCoroutine(PollForNetwork());
+            PollForNetwork();
         }
 
-        private IEnumerator PollForNetwork()
+        private void PollForNetwork()
         {
-            // todo, interval should increase over time etc and be configurable
-            while(true) {
-                yield return new WaitForSeconds(5);
-                if(!this.networkStatus.stateData.hasNetworkError) {
-                    break;
-                }
+            this.pollTimer = POLLING_INTERVAL_SECS;
+            this.enabled = true;
+        }
 
-                State<NetworkStatusData>.ResolveRequested(new ResolveRequestDTO {
+
+        private float pollTimer;
+
+        void Update()
+        {
+            var state = this.networkStatus.stateData;
+
+            if(!state.hasNetworkError) {
+                this.enabled = false;
+                this.pollTimer = 0f;
+                return;
+            }
+
+            if(state.networkReachability == NetworkReachability.NotReachable) {
+                this.enabled = false;
+                this.pollTimer = 0f;
+                return;
+            }
+
+            this.pollTimer -= Time.unscaledDeltaTime;
+
+            if(this.pollTimer <= 0) {
+                State<NetworkStatusData>.ResolveRequested(new ResolveRequestDTO
+                {
                     forceUpdate = true
                 });
+                this.pollTimer = POLLING_INTERVAL_SECS;
             }
         }
     }

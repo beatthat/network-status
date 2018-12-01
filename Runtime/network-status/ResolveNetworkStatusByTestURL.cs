@@ -23,9 +23,7 @@ namespace BeatThat.NetworkStatus
         }
 
 #if NET_4_6
-        public async Task<ResolveResultDTO<NetworkStatusData>> ResolveAsync(
-            Action<Request<ResolveResultDTO<NetworkStatusData>>> callback
-        )
+        override public async Task<ResolveResultDTO<NetworkStatusData>> ResolveAsync()
         {
             var nstatus = new NetworkStatusData
             {
@@ -40,15 +38,13 @@ namespace BeatThat.NetworkStatus
 
             await req.ExecuteAsyncTask();
 
-            var state = new NetworkStatusData();
+            nstatus.hasNetworkError = req.www.isNetworkError;
 
-            state.hasNetworkError = req.www.isNetworkError;
-
-            if(state.hasNetworkError) {
-                state.lastNetworkError = DateTime.Now;
+            if(nstatus.hasNetworkError) {
+                nstatus.lastNetworkError = DateTime.Now;
             }
             else {
-                state.lastNetworkSuccess = DateTime.Now;
+                nstatus.lastNetworkSuccess = DateTime.Now;
             }
 
             return ResolveResultDTO<NetworkStatusData>.ResolveSucceeded(nstatus);
@@ -75,17 +71,15 @@ namespace BeatThat.NetworkStatus
             {
                 new WebRequest(NextTestUrl()).Execute(req =>
                 {
-                    var state = new NetworkStatusData();
+                    nstatus.hasNetworkError = (req as WebRequest).www.isNetworkError;
 
-                    state.hasNetworkError = (req as WebRequest).www.isNetworkError;
-
-                    if (state.hasNetworkError)
+                    if (nstatus.hasNetworkError)
                     {
-                        state.lastNetworkError = DateTime.Now;
+                        nstatus.lastNetworkError = DateTime.Now;
                     }
                     else
                     {
-                        state.lastNetworkSuccess = DateTime.Now;
+                        nstatus.lastNetworkSuccess = DateTime.Now;
                     }
 
                     resolve(
