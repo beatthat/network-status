@@ -15,26 +15,25 @@ namespace BeatThat.NetworkStatus
     )]
     public class NetworkStatusStore : StateStore<NetworkStatusData>
     {
+
+
         protected override void BindStore()
         {
             Bind<UnityWebRequest>(NetworkNotification.WEB_REQUEST_RECEIVED_RESPONSE, this.OnNetworkResponse);
             Bind<UnityWebRequest>(NetworkNotification.WEB_REQUEST_NETWORK_ERROR, this.OnNetworkError);
         }
 
+
         void Update()
         {
             if(!this.isBound) {
                 return;
             }
-
             var data = this.stateData;
-
             var nr = Application.internetReachability;
-            if (nr == data.networkReachability)
-            {
+            if (nr == data.networkReachability) {
                 return;
             }
-
             data.networkReachability = nr;
             UpdateData(ref data);
         }
@@ -45,30 +44,24 @@ namespace BeatThat.NetworkStatus
             if(www.uri.IsFile) {
                 return;
             }
-
-
             var s = this.state;
-
             var d = s.data;
             var statusChanged = d.hasNetworkError;
-
             d.hasNetworkError = false;
             d.lastNetworkSuccess = DateTime.Now;
             s.data = d;
-
             UpdateState(ref s, statusChanged);
         }
+
 
         private void OnNetworkError(UnityWebRequest www)
         {
             var s = this.state;
-
             var d = s.data;
             var statusChanged = d.hasNetworkError == false;
             d.hasNetworkError = true;
             d.lastNetworkError = DateTime.Now;
             s.data = d;
-
             UpdateState(ref s, statusChanged);
         }
     }
