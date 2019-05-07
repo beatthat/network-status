@@ -1,7 +1,7 @@
 {
   "name": "network-status",
   "scope": "beatthat",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Provides data on network status. Works out of the box if app is using BeatThat.Requests for making web requests.",
   "main": "index.js",
   "scripts": {
